@@ -2,12 +2,11 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN npm install && npm run build
+RUN npm install
 
-# Stage 2: Serve with Node.js (Optional - better to use nginx or serve)
+# Stage 2: Run
 FROM node:18-alpine
 WORKDIR /app
-RUN npm install -g serve
-COPY --from=builder /app/build ./build
+COPY --from=builder /app /app
 EXPOSE 3000
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["node", "index.js"]

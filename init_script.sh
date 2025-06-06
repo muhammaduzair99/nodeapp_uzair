@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo su
 
 # Update system and install dependencies
 yum update -y
@@ -12,13 +11,13 @@ amazon-linux-extras install nginx1 -y
 systemctl start nginx
 systemctl enable nginx
 
-# Clone your app from GitHub
-cd /home/ec2-user
-git clone https://github.com/muhammaduzair99/nodeapp_uzair.git app
-cd app
+# Clone app repo
+git clone https://github.com/muhammaduzair99/nodeapp_uzair.git /home/ec2-user/app
+chown -R ec2-user:ec2-user /home/ec2-user/app
+cd /home/ec2-user/app/docker
 
-# Build Docker image and run container
-docker build -t nodeapp ./docker
+# Build and run Docker container
+docker build -t nodeapp .
 docker run -d -p 3000:3000 --name nodeapp nodeapp
 
 # Configure NGINX reverse proxy
@@ -38,8 +37,5 @@ server {
 }
 EOF
 
-# Apply NGINX config
+# Reload NGINX
 nginx -t && systemctl reload nginx
-
-# Set permissions
-chown -R ec2-user:ec2-user /home/ec2-user/app
