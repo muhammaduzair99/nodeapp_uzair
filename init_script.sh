@@ -9,16 +9,16 @@ yum install -y git curl nginx docker
 systemctl start docker
 systemctl enable docker
 amazon-linux-extras install nginx1 -y
-systemctl start nginxa
+systemctl start nginx
 systemctl enable nginx
 
-# Set up app directory and copy files from docker folder
-mkdir -p /home/ec2-user/app
-cp -r /home/ec2-user/docker/* /home/ec2-user/app/
-cd /home/ec2-user/app
+# Clone your app from GitHub
+cd /home/ec2-user
+git clone https://github.com/muhammaduzair99/nodeapp_uzair.git app
+cd app
 
 # Build Docker image and run container
-docker build -t nodeapp .
+docker build -t nodeapp ./docker
 docker run -d -p 3000:3000 --name nodeapp nodeapp
 
 # Configure NGINX reverse proxy
