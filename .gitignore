@@ -1,0 +1,16 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.log
+
+# Node.js
+node_modules/
+.env
+
+# Docker
+*.tar
+
+# Others
+*.pem
+muzair_accessKeys.csv
