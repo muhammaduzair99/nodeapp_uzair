@@ -1,13 +1,11 @@
 {
   "name": "nodeapp",
   "version": "1.0.0",
-  "description": "Simple Node.js app",
+  "description": "Simple Node.js app for Docker deployment",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Uzair",
-  "license": "ISC",
   "dependencies": {
     "express": "^4.18.2"
   }

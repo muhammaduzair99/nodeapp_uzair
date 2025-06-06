@@ -1,12 +1,20 @@
-# Stage 1: Build
-FROM node:18-alpine AS builder
+# # Stage 1: Build
+# FROM node:18-alpine AS builder
+# WORKDIR /app
+# COPY . .
+# RUN npm install
+
+# # Stage 2: Run
+# FROM node:18-alpine
+# WORKDIR /app
+# COPY --from=builder /app /app
+# EXPOSE 3000
+# CMD ["node", "index.js"]
+
+
+FROM node:18-alpine
 WORKDIR /app
 COPY . .
 RUN npm install
-
-# Stage 2: Run
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app /app
 EXPOSE 3000
 CMD ["node", "index.js"]
