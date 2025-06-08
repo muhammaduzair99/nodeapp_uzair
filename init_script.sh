@@ -20,7 +20,7 @@ docker pull uzair99/nodeapp-project:0.0.1
 
 # # Build and run Docker container
 # docker build -t nodeapp .
-docker run -d -p 3000:3000 --name nodeapp uzair99/nodeapp-project:0.0.1
+docker run -d -p 3000:3000 --name nodeapp uzair99/nodeapp-project:0.0.2
 
 # Configure NGINX reverse proxy
 cat <<EOF > /etc/nginx/conf.d/nodeapp.conf
