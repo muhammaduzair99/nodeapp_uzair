@@ -30,10 +30,31 @@ resource "aws_lb_target_group" "app_tg" {
   }
 }
 
+# HTTP listener: Redirect all HTTP to HTTPS
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 80
   protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+# HTTPS listener: Forward to target group
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+
+  certificate_arn   = "arn:aws:acm:us-east-2:762293625313:certificate/1ceec2a5-78ac-4655-a626-1416378efb08"
 
   default_action {
     type             = "forward"
