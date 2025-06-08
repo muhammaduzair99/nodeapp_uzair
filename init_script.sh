@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo su
 # Update system and install dependencies
 yum update -y
 yum install -y git curl nginx docker
@@ -12,13 +13,14 @@ systemctl start nginx
 systemctl enable nginx
 
 # Clone app repo
-git clone https://github.com/muhammaduzair99/nodeapp_uzair.git /home/ec2-user/app
-chown -R ec2-user:ec2-user /home/ec2-user/app
-cd /home/ec2-user/app/docker
+# git clone https://github.com/muhammaduzair99/nodeapp_uzair.git /home/ec2-user/app
+# chown -R ec2-user:ec2-user /home/ec2-user/app
+# cd /home/ec2-user/app/docker
+docker pull uzair99/nodeapp-project:0.0.1
 
-# Build and run Docker container
-docker build -t nodeapp .
-docker run -d -p 3000:3000 --name nodeapp nodeapp
+# # Build and run Docker container
+# docker build -t nodeapp .
+docker run -d -p 3000:3000 --name nodeapp uzair99/nodeapp-project:0.0.1
 
 # Configure NGINX reverse proxy
 cat <<EOF > /etc/nginx/conf.d/nodeapp.conf
