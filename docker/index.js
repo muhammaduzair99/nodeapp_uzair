@@ -1,50 +1,83 @@
-const express = require('express');
-const mysql = require('mysql2');
-const { Client } = require('pg');
 require('dotenv').config();
+const express = require('express');
+const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 
 const app = express();
+const port = 3000;
 
-// MySQL connection
-const mysqlConnection = mysql.createConnection({
+// PostgreSQL connection pool
+const pgPool = new Pool({
+  user: process.env.PG_USER,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DATABASE,
+  password: process.env.PG_PASSWORD,
+  port: 5432,
+  ssl: { rejectUnauthorized: false }
+});
+
+// MySQL connection config
+const mysqlConfig = {
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  port: process.env.MYSQL_PORT,
-});
-
-// PostgreSQL connection
-const pgClient = new Client({
-  host: process.env.POSTGRES_HOST,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DATABASE,
-  port: process.env.POSTGRES_PORT,
-});
-
-// Test MySQL connection
-mysqlConnection.connect(err => {
-  if (err) {
-    console.error('❌ MySQL connection failed:', err.stack);
-  } else {
-    console.log('✅ Connected to MySQL RDS');
-  }
-});
-
-// Test PostgreSQL connection
-pgClient.connect(err => {
-  if (err) {
-    console.error('❌ PostgreSQL connection failed:', err.stack);
-  } else {
-    console.log('✅ Connected to PostgreSQL RDS');
-  }
-});
+  database: process.env.MYSQL_DATABASE
+};
 
 app.get('/', (req, res) => {
-  res.send('Hello from Dockerized Node.js App with RDS connections!');
+  res.send('🚀 Hello from Dockerized Node.js App!');
 });
 
-app.listen(3000, () => {
-  console.log('App running on port 3000');
+app.get('/pgsql', async (req, res) => {
+  try {
+    const result = await pgPool.query('SELECT NOW()');
+    res.send(`✅ PostgreSQL connected! Server time: ${result.rows[0].now}`);
+  } catch (err) {
+    console.error('❌ PostgreSQL error:', err.message);
+    res.status(500).send('❌ PostgreSQL connection failed.');
+  }
+});
+
+app.get('/mysql', async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(mysqlConfig);
+    const [rows] = await connection.execute('SELECT NOW() AS now');
+    await connection.end();
+    res.send(`✅ MySQL connected! Server time: ${rows[0].now}`);
+  } catch (err) {
+    console.error('❌ MySQL error:', err.message);
+    res.status(500).send('❌ MySQL connection failed.');
+  }
+});
+
+app.get('/check-all', async (req, res) => {
+  const result = {
+    docker: true,
+    pgsql: false,
+    mysql: false
+  };
+
+  // Check PostgreSQL
+  try {
+    const pgResult = await pgPool.query('SELECT 1');
+    result.pgsql = pgResult ? true : false;
+  } catch (err) {
+    console.error('PostgreSQL check failed:', err.message);
+  }
+
+  // Check MySQL
+  try {
+    const connection = await mysql.createConnection(mysqlConfig);
+    await connection.execute('SELECT 1');
+    await connection.end();
+    result.mysql = true;
+  } catch (err) {
+    console.error('MySQL check failed:', err.message);
+  }
+
+  res.json(result);
+});
+
+app.listen(port, () => {
+  console.log(`🚀 App is running at http://localhost:${port}`);
 });

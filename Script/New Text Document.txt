@@ -1,0 +1,12 @@
+# Build and push
+docker build -t uzair99/nodeapp-project:0.0.5 .
+docker push uzair99/nodeapp-project:0.0.5
+
+# Run on EC2
+sudo docker stop nodeapp
+sudo docker rm nodeapp
+sudo docker run -d \
+  -p 3000:3000 \
+  --env-file /home/ec2-user/app/docker/.env \
+  --name nodeapp \
+  uzair99/nodeapp-project:0.0.5

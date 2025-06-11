@@ -1,20 +1,15 @@
-# # Stage 1: Build
-# FROM node:18-alpine AS builder
-# WORKDIR /app
-# COPY . .
-# RUN npm install
+FROM node:18
 
-# # Stage 2: Run
-# FROM node:18-alpine
-# WORKDIR /app
-# COPY --from=builder /app /app
-# EXPOSE 3000
-# CMD ["node", "index.js"]
+# Set working directory
+WORKDIR /usr/src/app
 
-
-FROM node:18-alpine
-WORKDIR /app
-COPY . .
+# Copy dependency files and install
+COPY package*.json ./
 RUN npm install
+
+# Copy app source code (including .env)
+COPY . .
+
+# Expose port and run app
 EXPOSE 3000
 CMD ["node", "index.js"]
