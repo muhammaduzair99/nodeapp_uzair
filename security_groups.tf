@@ -31,8 +31,30 @@ resource "aws_security_group" "ec2_sg" {
     security_groups = [aws_security_group.alb_sg.id]
   }
 
+# Metabase Port
+  ingress {
+    from_port   = 3001
+    to_port     = 3001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
+  # ✅ External access for MySQL (for DBeaver)
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
+  # ✅ External access for PostgreSQL (testing/debugging)
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+ 
   egress {
     from_port   = 0
     to_port     = 0
@@ -40,27 +62,12 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ✅ MySQL access
-  ingress {
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    self            = true
-  }
-
-  # ✅ PostgreSQL access
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    self            = true
-  }
   tags = {
     Name = "ec2-sg"
   }
-   lifecycle {
-    prevent_destroy = true  # 🚫 Prevent destroy of RDS-attached SG
-  }
+  #  lifecycle {
+  #   prevent_destroy = true  # 🚫 Prevent destroy of RDS-attached SG
+  # }
 }
 
 resource "aws_security_group" "alb_sg" {

@@ -17,3 +17,8 @@ output "mysql_endpoint" {
   description = "Endpoint for MySQL RDS instance"
   value       = aws_db_instance.mysql.endpoint
 }
+
+output "metabase_instance_ip" {
+  description = "Public IP of Metabase EC2 instance"
+  value       = aws_instance.metabase_instance.public_ip
+}
