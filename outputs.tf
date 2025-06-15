@@ -22,3 +22,8 @@ output "metabase_instance_ip" {
   description = "Public IP of Metabase EC2 instance"
   value       = aws_instance.metabase_instance.public_ip
 }
+
+output "metabase_dns" {
+  description = "Domain name for Metabase access"
+  value       = "https://bi.codelessops.site"
+}
